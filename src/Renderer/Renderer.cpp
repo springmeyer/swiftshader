@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "Renderer.hpp"
-
+#include <iostream>
 #include "Clipper.hpp"
 #include "Surface.hpp"
 #include "Primitive.hpp"
@@ -2132,7 +2132,9 @@ namespace sw
 	void Renderer::initializeThreads()
 	{
 		unitCount = ceilPow2(threadCount);
+		std::clog << "unitCount: " << unitCount << "\n";
 		clusterCount = ceilPow2(threadCount);
+		std::clog << "clusterCount: " << clusterCount << "\n";
 
 		for(int i = 0; i < unitCount; i++)
 		{
@@ -2864,12 +2866,19 @@ namespace sw
 			swiftConfig->getConfiguration(configuration);
 
 			precacheVertex = !newConfiguration && configuration.precache;
+			std::clog << "precacheVertex: " << precacheVertex << "\n";
 			precacheSetup = !newConfiguration && configuration.precache;
+			std::clog << "precacheSetup: " << precacheSetup << "\n";
 			precachePixel = !newConfiguration && configuration.precache;
+			std::clog << "precachePixel: " << precachePixel << "\n";
 
 			VertexProcessor::setRoutineCacheSize(configuration.vertexRoutineCacheSize);
 			PixelProcessor::setRoutineCacheSize(configuration.pixelRoutineCacheSize);
 			SetupProcessor::setRoutineCacheSize(configuration.setupRoutineCacheSize);
+			std::clog << "vertexRoutineCacheSize " << configuration.vertexRoutineCacheSize << "\n";
+			std::clog << "pixelRoutineCacheSize " << configuration.pixelRoutineCacheSize << "\n";
+			std::clog << "setupRoutineCacheSize " << configuration.setupRoutineCacheSize << "\n";
+
 
 			switch(configuration.textureSampleQuality)
 			{
@@ -2879,6 +2888,9 @@ namespace sw
 			default: Sampler::setFilterQuality(FILTER_ANISOTROPIC); break;
 			}
 
+			std::clog << "textureSampleQuality: " << configuration.textureSampleQuality << "\n";
+
+
 			switch(configuration.mipmapQuality)
 			{
 			case 0:  Sampler::setMipmapQuality(MIPMAP_POINT);  break;
@@ -2886,7 +2898,13 @@ namespace sw
 			default: Sampler::setMipmapQuality(MIPMAP_LINEAR); break;
 			}
 
+			std::clog << "mipmapQuality: " << configuration.mipmapQuality << "\n";
+
 			setPerspectiveCorrection(configuration.perspectiveCorrection);
+
+			std::clog << "perspectiveCorrection: " << configuration.perspectiveCorrection << "\n";
+
+			std::clog << "transcendentalPrecision: " << configuration.transcendentalPrecision << "\n";
 
 			switch(configuration.transcendentalPrecision)
 			{
@@ -2928,6 +2946,8 @@ namespace sw
 				break;
 			}
 
+			std::clog << "transparencyAntialiasing: " << configuration.transparencyAntialiasing << "\n";
+
 			switch(configuration.transparencyAntialiasing)
 			{
 			case 0:  transparencyAntialiasing = TRANSPARENCY_NONE;              break;
@@ -2941,6 +2961,8 @@ namespace sw
 			case 0:  threadCount = CPUID::processAffinity();  break;
 			default: threadCount = configuration.threadCount; break;
 			}
+		
+			std::clog << "threadCount " << threadCount << "\n";
 
 			CPUID::setEnableSSE4_1(configuration.enableSSE4_1);
 			CPUID::setEnableSSSE3(configuration.enableSSSE3);
@@ -2952,7 +2974,10 @@ namespace sw
 			cfg.clearOptimizationPasses();
 			for(auto pass : configuration.optimization)
 			{
-				if (pass != rr::Optimization::Pass::Disabled) { cfg.add(pass); }
+				if (pass != rr::Optimization::Pass::Disabled) {
+					std::clog << "adding optimization pass " << (int)pass << "\n";
+					cfg.add(pass);
+				}
 			}
 			rr::Nucleus::adjustDefaultConfig(cfg);
 
@@ -2961,6 +2986,12 @@ namespace sw
 			postBlendSRGB = configuration.postBlendSRGB;
 			exactColorRounding = configuration.exactColorRounding;
 			forceClearRegisters = configuration.forceClearRegisters;
+
+			std::clog << "forceWindowed: " << forceWindowed << "\n";
+			std::clog << "complementaryDepthBuffer: " << complementaryDepthBuffer << "\n";
+			std::clog << "postBlendSRGB: " << postBlendSRGB << "\n";
+			std::clog << "exactColorRounding: " << exactColorRounding << "\n";
+			std::clog << "forceClearRegisters: " << forceClearRegisters << "\n";
 
 		#ifndef NDEBUG
 			minPrimitives = configuration.minPrimitives;
